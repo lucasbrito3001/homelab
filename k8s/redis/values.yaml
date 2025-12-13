@@ -1,0 +1,24 @@
+auth:
+    password: "{PASSWORD}"
+
+master:
+    resourcesPreset: none
+    resources:
+        requests:
+            cpu: 100m
+            memory: 128Mi
+        limits:
+            memory: 128Mi
+
+replica:
+    replicaCount: 1
+    resourcesPreset: none
+    resources:
+        requests:
+            cpu: 100m
+            memory: 128Mi
+        limits:
+            memory: 128Mi
+
+volumePermissions:
+    enabled: true
