@@ -2,6 +2,8 @@ package mongodb
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/lucasbrito3001/url_shortner/internal/app/ports"
 	"github.com/lucasbrito3001/url_shortner/internal/domain"
@@ -28,10 +30,11 @@ func (r *MongoDbUrlRepository) Save(ctx context.Context, url *domain.ShortenedUr
 func (r *MongoDbUrlRepository) FindByCode(ctx context.Context, code domain.Code) (*domain.ShortenedUrl, error) {
 	var shortenedUrlDocument shortenedUrlDocument
 
-	filter := bson.M{"hash": string(code)}
+	filter := bson.M{"code": strings.TrimSpace(string(code))}
 
 	err := r.collection.FindOne(ctx, filter).Decode(&shortenedUrlDocument)
 	if err != nil {
+		fmt.Println("error getting document on mongo: ", err.Error())
 		return nil, err
 	}
 

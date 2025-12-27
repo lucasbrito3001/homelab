@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: bookinfos-read
+    labels:
+        app.kubernetes.io/name: bookinfos-read
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app.kubernetes.io/name: bookinfos-read
+    template:
+        metadata:
+            labels:
+                app.kubernetes.io/name: bookinfos-read
+        spec:
+            containers:
+                - name: bookinfos-read
+                  image: lucasbrito3001/bookinfos-read:v1.0.0
+                  imagePullPolicy: Always
+                  ports:
+                      - containerPort: 8080
+                        protocol: TCP
+                  env:
+                      - name: REDIS_URL
+                        value: "redis-replicas.redis.svc.cluster.local:6379"
+                      - name: REDIS_PASSWORD
+                        valueFrom:
+                            secretKeyRef:
+                                name: bookinfos-read-secrets
+                                key: redis_password
+                  readinessProbe:
+                      httpGet:
+                          path: /healthz
+                          port: 8080
+                          scheme: HTTP
+                      timeoutSeconds: 3
+                      periodSeconds: 15
+                      successThreshold: 1
+                      failureThreshold: 3
+                  startupProbe:
+                      httpGet:
+                          path: /healthz
+                          port: 8080
+                          scheme: HTTP
+                      timeoutSeconds: 3
+                      periodSeconds: 1
+                      successThreshold: 1
+                      failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: bookinfos-read
+spec:
+    selector:
+        app.kubernetes.io/name: bookinfos-read
+    ports:
+        - protocol: TCP
+          port: 80
+          targetPort: 8080
+---
+apiVersion: v1
+kind: Secret
+metadata:
+    name: bookinfos-read-secrets
+type: Opaque
+data:
+    redis_password: QVNEIzIxMjNEc2F1Z2h1NCNraWo=

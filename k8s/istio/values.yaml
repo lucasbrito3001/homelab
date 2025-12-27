@@ -1,0 +1,13 @@
+# pilot:
+#   env:
+#     PILOT_ENABLE_OTLP_TRACING: "true"
+
+meshConfig:
+    enableTracing: true
+    defaultConfig:
+      tracing: {}
+    extensionProviders:
+    - name: tempo
+      opentelemetry:
+        port: 4317
+        service: tempo.monitoring.svc.cluster.local

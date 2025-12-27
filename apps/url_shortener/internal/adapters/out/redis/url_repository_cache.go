@@ -3,6 +3,7 @@ package redis
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"math/rand"
 	"time"
 
@@ -32,13 +33,26 @@ func (r *CachedUrlRepository) Save(ctx context.Context, url *domain.ShortenedUrl
 func (r *CachedUrlRepository) FindByCode(ctx context.Context, code domain.Code) (*domain.ShortenedUrl, error) {
 	val, err := r.redis.Get(ctx, "code:"+string(code)).Result()
 	if err != nil {
-		return r.inner.FindByCode(ctx, code)
+		fmt.Println("error getting from redis", err.Error())
+		shortenedUrl, err := r.inner.FindByCode(ctx, code)
+		if err != nil {
+			return nil, err
+		}
+
+		model := fromDomain(shortenedUrl)
+		data, _ := json.Marshal(model)
+
+		jitter := r.getJitter()
+		r.redis.Set(ctx, "code:"+string(code), data, r.ttl+jitter)
+
+		return shortenedUrl, nil
 	}
 
+	fmt.Println("found in redis")
 	var model shortenedUrlCacheModel
 	json.Unmarshal([]byte(val), &model)
 
-	jitter := time.Duration(rand.Intn(30)) * time.Minute
+	jitter := r.getJitter()
 	r.redis.Expire(ctx, "code:"+string(code), r.ttl+jitter)
 
 	domain, err := model.toDomain()
@@ -47,4 +61,8 @@ func (r *CachedUrlRepository) FindByCode(ctx context.Context, code domain.Code) 
 	}
 
 	return domain, nil
+}
+
+func (r *CachedUrlRepository) getJitter() time.Duration {
+	return time.Duration(rand.Intn(30)) * time.Minute
 }

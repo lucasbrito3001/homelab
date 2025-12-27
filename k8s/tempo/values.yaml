@@ -1,0 +1,13 @@
+replicas: 1
+tempo:
+    search:
+        enabled: true
+    metricsGenerator:
+        enabled: true
+    resources:
+        limits:
+            cpu: 1000m
+            memory: 1Gi
+        requests:
+            cpu: 300m
+            memory: 200Mi

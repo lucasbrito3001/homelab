@@ -16,7 +16,7 @@ spec:
         spec:
             containers:
                 - name: url-shortener
-                  image: lucasbrito3001/url-shortener:latest
+                  image: lucasbrito3001/url-shortener:v1.0.11
                   imagePullPolicy: IfNotPresent
                   resources:
                       requests:
@@ -31,7 +31,7 @@ spec:
                   - name: SERVER_PORT
                     value: "8080"
                   - name: CACHE_TTL
-                    value: "2d"
+                    value: "3600"
                   - name: COUNTER_OFFSET
                     value: "14776336"
                   ports:

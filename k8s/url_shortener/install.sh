@@ -25,6 +25,7 @@ TMP_SECRET_PATH=./manifests/tmp-secret.yaml
 sed "s|{REDIS_HOST}|${REDIS_HOST_BASE64}|g;s|{REDIS_PORT}|${REDIS_PORT_BASE64}|g;s|{REDIS_PASS}|${REDIS_PASS_BASE64}|g;s|{MONGODB_URI}|${MONGODB_URI_BASE64}|g" "$SECRET_PATH" >> "$TMP_SECRET_PATH"
 
 k create ns $NAMESPACE
+k label ns $NAMESPACE istio-injection=enabled
 
 k apply -n $NAMESPACE -f $TMP_SECRET_PATH
 

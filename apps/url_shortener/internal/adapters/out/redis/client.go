@@ -20,6 +20,8 @@ func NewClient(cfg RedisConfig) (*redis.Client, error) {
 		Addr:     fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
 		Password: cfg.Password,
 		DB:       cfg.DB,
+		PoolSize: 200,
+		MinIdleConns: 20,
 	})
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

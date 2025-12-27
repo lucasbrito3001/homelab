@@ -1,8 +1,6 @@
 package internal
 
 import (
-	"time"
-
 	"github.com/gin-gonic/gin"
 	"github.com/lucasbrito3001/url_shortner/internal/adapters/in/http"
 	"github.com/lucasbrito3001/url_shortner/internal/adapters/out/mongodb"
@@ -37,10 +35,10 @@ func bootstrapConnections(env *config.Environment) (*mongo.Client, *redis.Client
 
 func bootstrapRepositories(mongoClient *mongo.Client, redisClient *redis.Client, cacheTtl int) (ports.UrlRepository, ports.CounterRepository) {
 	mongoDbUrlRepository := mongodb.NewMongoDbUrlRepository(mongoClient.Database("url_shortner"))
-	redisUrlRepository := redisinternal.NewCachedUrlRepository(mongoDbUrlRepository, redisClient, time.Duration(cacheTtl))
+	// redisUrlRepository := redisinternal.NewCachedUrlRepository(mongoDbUrlRepository, redisClient, time.Second*time.Duration(cacheTtl))
 	redisCounterRepository := redisinternal.NewRedisCounterRepository(redisClient)
 
-	return redisUrlRepository, redisCounterRepository
+	return mongoDbUrlRepository, redisCounterRepository
 }
 
 func bootstrapDomain(env *config.Environment) (*domain.Shortener, error) {

@@ -31,3 +31,12 @@ func (c *shortenedUrlCacheModel) toDomain() (*domain.ShortenedUrl, error) {
 		CreatedAt: c.CreatedAt,
 	}, nil
 }
+
+func fromDomain(url *domain.ShortenedUrl) *shortenedUrlCacheModel {
+	return &shortenedUrlCacheModel{
+		ID:        url.ID,
+		Original:  string(url.Original),
+		Code:      string(url.Code),
+		CreatedAt: url.CreatedAt,
+	}
+}
